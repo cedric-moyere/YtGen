@@ -1,0 +1,26 @@
+<div class="container">
+  <form id="gen-form">
+    <div class="row">
+      <div class="col">
+        <div class="card mb-3">
+          <div class="card-header"></div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label for="url" class="form-label">URL</label>
+              <input type="text" class="form-control" id="url" required>
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Generate</button>
+            <button id="clearBtn" class="btn btn-primary mt-2">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div id="errElem" class="alert alert-danger" role="alert">
+    URL is empty !
+  </div>
+  <div id="successElem" class="alert alert-success" role="alert">
+    Stream successfully generated.
+  </div>
+  <div id="spinner" class="spinner-border"></div>
+</div>
