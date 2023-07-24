@@ -9,8 +9,13 @@
               <label for="url" class="form-label">URL</label>
               <input type="text" class="form-control" id="url" required>
             </div>
-            <button type="submit" class="btn btn-success mt-2">Generate</button>
-            <button id="clearBtn" class="btn btn-primary mt-2">Clear</button>
+            <div class="d-flex justify-content-between"> <!-- Add this div with Bootstrap class -->
+              <div>
+                <button type="submit" class="btn btn-success mt-2">Generate</button>
+                <button id="pasteBtn" class="btn btn-primary mt-2">Paste</button>
+              </div>
+                <button id="clearBtn" class="btn btn-warning mt-2">Clear</button>
+            </div>
           </div>
         </div>
       </div>

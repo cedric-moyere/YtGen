@@ -7,7 +7,7 @@
     "start": "electron .",
     "package:win64": "electron-packager . --platform=win32 --arch=x64 --overwrite --icon=./icon.ico --out=build"
   },
-  "author": "Ausy",
+  "author": "CMO",
   "license": "",
   "dependencies": {
     "@electron/remote": "^2.0.8",

@@ -19,6 +19,7 @@ class Generator extends HTMLElement {
       this.errMsg.hidden = true;
       this.errMsg.value = '';
       this.successMsg.hidden = false;
+      this.url.value = '';
     });
 
     ipcRenderer.on("file:error", (er, err) => {
@@ -48,6 +49,9 @@ class Generator extends HTMLElement {
     form.addEventListener("submit", (e) => this.submitForm(e));
     const clearBtn = this.shadowRoot.querySelector("#clearBtn");
     clearBtn.addEventListener("click", (e) => this.clearUrl(e));
+    form.addEventListener("submit", (e) => this.submitForm(e));
+    const pasteBtn = this.shadowRoot.querySelector("#pasteBtn");
+    pasteBtn.addEventListener("click", (e) => this.pasteFromClipboard(e));
     this.url = this.shadowRoot.querySelector("#url");
     this.successMsg = this.shadowRoot.querySelector("#successElem");
     this.successMsg.hidden = true;
@@ -67,6 +71,16 @@ class Generator extends HTMLElement {
     this.successMsg.hidden = true;
     this.errMsg.hidden = true;
     this.errMsg.value = '';
+  }
+
+  pasteFromClipboard(e) {
+    e.preventDefault();
+    navigator.clipboard.readText().then((text) => {
+      this.url.value = text;
+      console.log('Contenu du presse-papiers : ' + text);
+    }).catch((error) => {
+      console.error('Erreur lors de la récupération du presse-papiers : ', error);
+    });
   }
 }
 
