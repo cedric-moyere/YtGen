@@ -9,7 +9,13 @@
               <label for="url" class="form-label">URL</label>
               <input type="text" class="form-control" id="url" required>
             </div>
-            <div class="d-flex justify-content-between"> <!-- Add this div with Bootstrap class -->
+            <div>
+              <div class="form-check form-switch">
+                <input id="switchAudioOnly" class="form-check-input" type="checkbox" role="switch" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Audio only</label>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
               <div>
                 <button type="submit" class="btn btn-success mt-2">Generate</button>
                 <button id="pasteBtn" class="btn btn-primary mt-2">Paste</button>

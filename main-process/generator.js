@@ -1,33 +1,26 @@
 const { ipcMain } = require("electron");
 const fs = require("fs");
 const ytdl = require('ytdl-core');
-const fullPath = fileName => `C:\\Users\\Cedric\\Downloads\\${fileName}.mp4`;
+const fullPath = (fileName, ext) => `C:\\Users\\Cedric\\Downloads\\${fileName}.${ext}`;
 const SUCCESS = "";
 
-ipcMain.on("form:submit", async (event, url) => {
+ipcMain.on("form:submit", async (event, url, audioOnly) => {
   try {
-    await generate(url);
+    await generate(url, audioOnly);
     event.reply("file:success", SUCCESS);
   } catch (err) {
-    console.log(err);
     event.reply("file:error", err);
   }
 });
 
-async function generate(url) {
-  fs.writeFile('C:/Users/Cedric/Downloads/test.txt', JSON.stringify(await ytdl.getInfo(url)), err => {
-    if (err) {
-      console.error(err);
-    }
-  });
-  console.log(await ytdl.getInfo(url))
+async function generate(url, audioOnly) {
   if(ytdl.validateURL(url)){
-    const title = (await ytdl.getInfo(url)).videoDetails.title;
+  const title = (await ytdl.getInfo(url)).videoDetails.title;
     const pureTitle = title.replace(/[^a-zA-Z ]/g, "");
+    const ext = audioOnly ? 'm4a' : 'mp4'
     ytdl(url, {
-      format: 'mp3',
-      filter: 'audioonly',
-    }).pipe(fs.createWriteStream(fullPath(pureTitle)));
+      filter: audioOnly ? 'audioonly' : 'audioandvideo',
+    }).pipe(fs.createWriteStream(fullPath(pureTitle, ext)));
   }else{
     throw("Unable to parse URL");
   }
