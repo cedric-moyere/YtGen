@@ -20,7 +20,7 @@ function initialize() {
       useContentSize: true,
       autoHideMenuBar: true,
       width: 680,
-      height: 400,
+      height: 450,
       title: app.getName(),
       webPreferences: {
         nodeIntegration: true,

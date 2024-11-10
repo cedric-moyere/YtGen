@@ -3,9 +3,8 @@ const { ipcRenderer } = require("electron");
 class Generator extends HTMLElement {
   url;
   audioOnly;
-  spinner;
-  errMsg;
-  successMsg;
+  progressBar;
+  alertMsg;
 
   constructor() {
     super();
@@ -13,20 +12,25 @@ class Generator extends HTMLElement {
     this.attachShadow({ mode: "open" });
     fetch("./sections/generator.html")
       .then((stream) => stream.text())
-      .then((html) => this.defineComponent(html));
+      .then((html) => {
+        this.defineComponent(html);
+      })
+
+    ipcRenderer.on('file:progress', (event, progress) => {
+      this.progressBar.value = progress;
+    });
 
     ipcRenderer.on("file:success", (er, success) => {
-      this.spinner.hidden = true;
-      this.errMsg.hidden = true;
-      this.errMsg.value = '';
-      this.successMsg.hidden = false;
+      this.progressBar.hidden = true;
+      this.alertMsg.classList.remove("alert-info");
+      this.alertMsg.classList.add("alert-success");
+      this.alertMsg.innerText = success;
     });
 
     ipcRenderer.on("file:error", (er, err) => {
-      this.spinner.hidden = true;
-      this.successMsg.hidden = true;
-      this.errMsg.innerText = err;
-      this.errMsg.hidden = false;
+      this.progressBar.hidden = true;
+      this.alertMsg.classList.add("alert-danger");
+      this.alertMsg.innerText = err;
     });
   }
 
@@ -43,8 +47,8 @@ class Generator extends HTMLElement {
     this.shadowRoot.appendChild(style);
 
     // Handle elem and events
-    this.spinner = this.shadowRoot.querySelector("#spinner");
-    this.spinner.hidden = true;
+    this.progressBar = this.shadowRoot.querySelector("#progressBar");
+    this.progressBar.hidden = true;
     const form = this.shadowRoot.querySelector("#gen-form");
     form.addEventListener("submit", (e) => this.submitForm(e));
     const clearBtn = this.shadowRoot.querySelector("#clearBtn");
@@ -53,24 +57,27 @@ class Generator extends HTMLElement {
     pasteBtn.addEventListener("click", (e) => this.pasteFromClipboard(e));
     this.url = this.shadowRoot.querySelector("#url");
     this.audioOnly = this.shadowRoot.querySelector("#switchAudioOnly");
-    this.successMsg = this.shadowRoot.querySelector("#successElem");
-    this.successMsg.hidden = true;
-    this.errMsg = this.shadowRoot.querySelector("#errElem");
-    this.errMsg.hidden = true;
+    this.alertMsg = this.shadowRoot.querySelector("#alertMsgElem");
+    this.alertMsg.hidden = true;
   }
 
   submitForm(e) {
     e.preventDefault();
-    this.spinner.hidden = false;
+    this.alertMsg.hidden = false;
+    this.alertMsg.classList.remove("alert-danger");
+    this.alertMsg.classList.remove("alert-success");
+    this.alertMsg.classList.add("alert-info");
+    this.alertMsg.innerText = "Wait for the download to start...";
+    this.progressBar.hidden = false;
     ipcRenderer.send("form:submit", this.url.value, this.audioOnly.checked);
   }
 
   clearUrl(e){
     e.preventDefault();
-    this.url.value = '';
-    this.successMsg.hidden = true;
-    this.errMsg.hidden = true;
-    this.errMsg.value = '';
+    this.alertMsg.hidden = true;
+    this.progressBar.hidden = true;
+    this.progressBar.value = 0;
+    this.url.value = null;
   }
 
   pasteFromClipboard(e) {
@@ -78,7 +85,8 @@ class Generator extends HTMLElement {
     navigator.clipboard.readText().then((text) => {
       this.url.value = text;
     }).catch((error) => {
-      console.error('Erreur lors de la récupération du presse-papiers : ', error);
+      this.alertMsg.classList.add("alert-danger");
+      this.alertMsg.innerText = error.message;
     });
   }
 }
